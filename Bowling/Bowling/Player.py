@@ -107,5 +107,28 @@ class Player(object):
             else:
                 return 0
             
+    #指定のフレームがストライクか調べる
+    def _isStrike(self, frame):
+        if self.ret[frame][0] == STRIKE:
+            return True
+        else:
+            return False
+    
+    #指定のフレームがスペアか調べる
+    def _isSpare(self, frame):
+        #総和が10の場合
+        if self._sumFrame(frame) == STRIKE:
+            #最大値が10の場合
+            if max(self.ret[frame]) == STRIKE:
+                return False
+            else:
+                return True
+        else:
+            return False
+            
+
+    def _sumFrame(self, frame):
+        return sum(self.ret[frame])
+            
     def set(self, lane, ret):
         self.ret[lane-1] = ret

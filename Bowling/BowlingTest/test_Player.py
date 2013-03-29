@@ -46,6 +46,25 @@ class Test(unittest.TestCase):
         player.set(3, [1, 0])
         self.assertEqual(player.score(), 33, "CASE7")
 
+        player.set(1, [10, 0])
+        player.set(2, [10, 0])
+        player.set(3, [10, 0])        
+        player.set(4, [10, 0])
+        player.set(5, [10, 0])
+        player.set(6, [10, 0])
+        player.set(7, [10, 0])
+        player.set(8, [10, 0])
+        player.set(9, [10, 0])
+        player.set(10, [10, 10, 10])
+        self.assertEqual(player.score(), 300, "CASE8")
+        
+        #スペアの確認
+        player.reset()
+        player.set(1, [5, 5])
+        player.set(2, [4, 0])
+        player.set(3, [1, 0])
+        self.assertEqual(player.score(), 19, "CASE9")
+
 if __name__ == "__main__":
     #import sys;sys.argv = ['', 'Test.testScore']
     unittest.main()

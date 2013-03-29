@@ -53,7 +53,7 @@ class Player(object):
             #ストライク判定
             if self._isStrike(i):
                 s += self._next(i, BALL_1) + self._nextnext(i, BALL_1)
-            s += r[0] + r[1]
+            s += self._sumFrame(i)
         return s
     
     def _next(self, frame, ball):
@@ -109,6 +109,10 @@ class Player(object):
             
     #指定のフレームがストライクか調べる
     def _isStrike(self, frame):
+        #10フレーム目は判定しない
+        if frame == FRAME_10:
+            return False
+        
         if self.ret[frame][0] == STRIKE:
             return True
         else:
@@ -116,6 +120,10 @@ class Player(object):
     
     #指定のフレームがスペアか調べる
     def _isSpare(self, frame):
+        #10フレーム目は判定しない
+        if frame == FRAME_10:
+            return False
+        
         #総和が10の場合
         if self._sumFrame(frame) == STRIKE:
             #最大値が10の場合

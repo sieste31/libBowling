@@ -51,7 +51,7 @@ class Player(object):
         s = 0;
         for i, r in enumerate(self.ret):
             #ストライク判定
-            if r[0] == STRIKE:
+            if self._isStrike(i):
                 s += self._next(i, BALL_1) + self._nextnext(i, BALL_1)
             s += r[0] + r[1]
         return s

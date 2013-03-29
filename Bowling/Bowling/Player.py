@@ -53,6 +53,8 @@ class Player(object):
             #ストライク判定
             if self._isStrike(i):
                 s += self._next(i, BALL_1) + self._nextnext(i, BALL_1)
+            if self._isSpare(i):
+                s += self._next(i, BALL_2)
             s += self._sumFrame(i)
         return s
     

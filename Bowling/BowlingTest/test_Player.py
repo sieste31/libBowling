@@ -44,7 +44,7 @@ class Test(unittest.TestCase):
         player.set(1, [10, 0])
         player.set(2, [10, 0])
         player.set(3, [1, 0])
-        self.assertEqual(player.score(), 42, "CASE7")
+        self.assertEqual(player.score(), 32, "CASE7")
 
 if __name__ == "__main__":
     #import sys;sys.argv = ['', 'Test.testScore']

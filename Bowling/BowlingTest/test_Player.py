@@ -35,6 +35,11 @@ class Test(unittest.TestCase):
         self.assertEqual(player.score(), 5, "CASE4")
         player.set(1, [0, 5])
         self.assertEqual(player.score(), 5, "CASE5")
+        
+        # ストライクを取ったら次の２投を加算する
+        player.set(1, [10, 0])
+        player.set(2, [1, 0])
+        self.assertEqual(player.score(), 12, "CASE6")
 
 
 if __name__ == "__main__":

@@ -31,7 +31,10 @@ class Player(object):
     
     def score(self):
         s = 0;
-        for r in self.ret:
+        for i, r in enumerate(self.ret):
+            #ストライク判定
+            if r[0] == 10:
+                s += self.ret[i+1][0] + self.ret[i+1][1]
             s += r[0] + r[1]
         return s
     

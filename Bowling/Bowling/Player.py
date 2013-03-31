@@ -22,13 +22,47 @@ BALL_3 = 2
 
 STRIKE = 10
 
+class Frame(object):
+    def __init__(self, num, f, s, t):
+        self.ball = [f, s, t]
+        self.num = num
+        
+    def isStrike(self):
+        if self.sum(1) == STRIKE:
+            return True
+        else:
+            return False
+        
+    def isSpare(self):
+        if not self.isStrike() and self.sum() == STRIKE:
+            return True
+        else:
+            return False
+        
+    #num投目までの投球の合計
+    def sum(self, num = 3):
+        s = sum(self.ball[:num])
+        return s
+    
+    def score(self, next_frame = None, nextnext_frame = None):
+        s = 0
+        #ストライクの場合,次のフレーム＋（次のフレームがストライクなら次の次の一投目）
+        if self.isStrike() and next_frame is not None:
+            if nextnext_frame is not None:
+                s = next_frame.sum(2) + (nextnext_frame.sum(1) if next_frame.isStrike() else 0)
+            else:
+                s = next_frame.sum(2)
+
+        #スペアの場合、次のフレームの一投目
+        if self.isSpare():
+            s = next_frame.sum(1)
+        s += self.sum()
+        return s
 
 class Player(object):
     '''
     classdocs
     '''
-
-
     def __init__(self):
         '''
         Constructor
@@ -36,109 +70,25 @@ class Player(object):
         self.reset()
 
     def reset(self):
-        self.ret = [[0, 0],     # 1レーン
-                    [0, 0],     # 2レーン
-                    [0, 0],     # 3レーン
-                    [0, 0],     # 4レーン
-                    [0, 0],     # 5レーン
-                    [0, 0],     # 6レーン
-                    [0, 0],     # 7レーン
-                    [0, 0],     # 8レーン
-                    [0, 0],     # 9レーン
-                    [0, 0, 0] ] # 10レーン        
-    
+        self.frames = [Frame(FRAME_1, 0, 0, 0),
+                       Frame(FRAME_2, 0, 0, 0),
+                       Frame(FRAME_3, 0, 0, 0),
+                       Frame(FRAME_4, 0, 0, 0),
+                       Frame(FRAME_5, 0, 0, 0),
+                       Frame(FRAME_6, 0, 0, 0),
+                       Frame(FRAME_7, 0, 0, 0),
+                       Frame(FRAME_8, 0, 0, 0),
+                       Frame(FRAME_9, 0, 0, 0),
+                       Frame(FRAME_10, 0, 0, 0),
+                       ]
+            
     def score(self):
         s = 0;
-        for i, r in enumerate(self.ret):
-            #ストライク判定
-            if self._isStrike(i):
-                s += self._next(i, BALL_1) + self._nextnext(i, BALL_1)
-            if self._isSpare(i):
-                s += self._next(i, BALL_2)
-            s += self._sumFrame(i)
+        length = len(self.frames)
+        for i, frame in enumerate(self.frames):
+            s += frame.score(self.frames[i+1] if i+1 < length else None,
+                             self.frames[i+2] if i+2 < length else None)
         return s
-    
-    def _next(self, frame, ball):
-        #１０フレーム目は特殊
-        if frame == FRAME_10:
-            #1投目の場合、２投目をさす
-            if ball == BALL_1:
-                return self.ret[frame][BALL_2]
-            #２投目の場合、３投目を指す
-            elif ball == BALL_2:
-                return self.ret[frame][BALL_3]
-            #３投目の場合、0を返す
-            else:
-                return 0
-        # １０フレーム目以外
-        else:
-            #１投目の場合、ストライクの場合は次のフレームを返し、
-            # ストライクでなければ２投目を指す
-            if ball == BALL_1:
-                if self.ret[frame][ball] == STRIKE:
-                    return self.ret[frame+1][BALL_1]
-                else:
-                    return self.ret[frame][BALL_2]
-            # ２投目の場合、次のフレームの１投目をさす
-            elif ball == BALL_2:
-                return self.ret[frame+1][BALL_1]
-            # それ以外（不正パス）は0を返す
-            else:
-                return 0
             
-    def _nextnext(self, frame, ball):
-        #10フレーム目は特殊
-        if frame == FRAME_10:
-            #１投目の場合、３投目をさす
-            if ball == BALL_1:
-                return self.ret[frame][BALL_3]
-            #２投目、３投目は0を返す
-            else:
-                return 0
-        #10フレーム目以外の場合
-        else:
-            #１投目の場合、ストライクの場合は次のフレームの次の投球を返す
-            if ball == BALL_1:
-                if self.ret[frame][BALL_1] == STRIKE:
-                    return self._next(frame+1, BALL_1)
-                else:
-                    return self._next(frame, BALL_2)
-            #２投目の場合、次のフレーム１投目の次の投球をさす
-            elif ball == BALL_2:
-                return self.next(frame+1, BALL_1)
-            else:
-                return 0
-            
-    #指定のフレームがストライクか調べる
-    def _isStrike(self, frame):
-        #10フレーム目は判定しない
-        if frame == FRAME_10:
-            return False
-        
-        if self.ret[frame][0] == STRIKE:
-            return True
-        else:
-            return False
-    
-    #指定のフレームがスペアか調べる
-    def _isSpare(self, frame):
-        #10フレーム目は判定しない
-        if frame == FRAME_10:
-            return False
-        
-        #総和が10の場合
-        if self._sumFrame(frame) == STRIKE:
-            #最大値が10の場合
-            if max(self.ret[frame]) == STRIKE:
-                return False
-            else:
-                return True
-        else:
-            return False
-            
-
-    def _sumFrame(self, frame):
-        return sum(self.ret[frame])
-            
-    def set(self, lane, ret):
-        self.ret[lane-1] = ret
+    def set(self, frame, f, s = 0, t = 0):
+        self.frames[frame].ball = [f, s, t]
